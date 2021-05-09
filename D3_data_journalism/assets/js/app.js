@@ -1,13 +1,4 @@
 // @TODO: YOUR CODE HERE!
-// var cdata = ("assets/data/data.csv")
-
-// function init() {
-//     var selData = d3.select("#scatter");
-//     d3.csv(cdata).then(function(data) {
-//     // Visualize the data
-//     console.log(data);
-//   });
-// };
 
 // svg container
 var svgHeight = 500;
@@ -15,31 +6,20 @@ var svgWidth = 900;
 
 // margins
 var margin = {
-    top: 20,
-    right: 40,
-    bottom: 60,
-    left: 100
+    top: 40,
+    right: 60,
+    bottom: 100,
+    left: 80
 };
 
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
-
-// var width = parseInt(d3.select("#scatter").style("width"));
-// var height = width - width / 3.9;
-// var labelArea = 110;
-// var margin = 20;
-
-// var tPadBot = 40;
-// var tPadLeft = 40;
 
 var svg = d3
   .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight)
-//   .attr("class", "chart");
-//   console.log(width);
-//   console.log(height);
 
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -50,19 +30,19 @@ d3.csv("assets/data/data.csv").then(function(cdata) {
     // Step 1: Parse Data/Cast as numbers
     // ==============================
     cdata.forEach(function(data) {
-        data.age = +data.age;
-        data.smokes = +data.smokes;
-        // console.log(data.age);
+        data.healthcare = +data.healthcare;
+        data.poverty = +data.poverty;
+        // console.log(data.healthcare);
     });
 
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-      .domain([30, d3.max(cdata, d => d.age)])
-      .range([0, width]);
+      .domain([4, d3.max(cdata, d => d.healthcare)])
+      .range([2, width]);
 
     var yLinearScale = d3.scaleLinear()
-      .domain([8, d3.max(cdata, d => d.smokes)])
+      .domain([8, d3.max(cdata, d => d.poverty)])
       .range([height, 0]);
 
     // Step 3: Create axis functions
@@ -85,11 +65,21 @@ d3.csv("assets/data/data.csv").then(function(cdata) {
     .data(cdata)
     .enter()
     .append("circle")
-    .attr("cx", d => xLinearScale(d.age))
-    .attr("cy", d => yLinearScale(d.smokes))
+    .attr("cx", d => xLinearScale(d.healthcare))
+    .attr("cy", d => yLinearScale(d.poverty))
     .attr("r", "10")
-    .attr("fill", "green")
-    .attr("opacity", ".5");
+    .attr("fill", "gray")
+    .attr("opacity", ".8");
+
+    var circlesText = chartGroup.selectAll("circleText")
+    .data(cdata)
+    .enter()
+    .append("text")
+    .attr("x", d => xLinearScale(d.healthcare))
+    .attr("y", d => yLinearScale(d.poverty))
+    .text(d => (d.abbr))
+    .attr("font-size","11px")
+    .attr("class", "stateText");
 
     // Step 6: Initialize tool tip
     // ==============================
@@ -97,7 +87,7 @@ d3.csv("assets/data/data.csv").then(function(cdata) {
       .attr("class", "tooltip")
       .offset([80, -20])
       .html(function(d) {
-        return (`${d.state}<br>Age: ${d.age}<br>Smokes: ${d.smokes}`);
+        return (`${d.state}<br>healthcare: ${d.healthcare}<br>poverty: ${d.poverty}`);
       });
 
     // Step 7: Create tooltip in the chart
@@ -115,9 +105,20 @@ d3.csv("assets/data/data.csv").then(function(cdata) {
         toolTip.hide(data);
       });
 
-});
+    // Create axes labels
+    chartGroup.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left + 30)
+      .attr("x", 0 - (height / 2))
+      .attr("class", "axisText")
+      .text("Lacks Healthcare (%)");
+
+    chartGroup.append("text")
+      .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+      .attr("class", "axisText")
+      .text("In Poverty (%)");
+  }).catch(function(error) {
+    console.log(error);
+  });
 
     
-
-
-// init();
