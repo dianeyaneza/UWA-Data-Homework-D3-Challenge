@@ -20,6 +20,7 @@ var svg = d3
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight)
+//   .attr ("viewBox", svgWidth svgHeight)
 
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -71,14 +72,14 @@ d3.csv("assets/data/data.csv").then(function(cdata) {
     .attr("fill", "gray")
     .attr("opacity", ".8");
 
-    var circlesText = chartGroup.selectAll("circleText")
+    var circlesText = chartGroup.selectAll("circlesText")
     .data(cdata)
     .enter()
     .append("text")
     .attr("x", d => xLinearScale(d.healthcare))
     .attr("y", d => yLinearScale(d.poverty))
     .text(d => (d.abbr))
-    .attr("font-size","11px")
+    .attr("font-size","10px")
     .attr("class", "stateText");
 
     // Step 6: Initialize tool tip
